@@ -16,13 +16,23 @@
 })(this, function( angular, signals ) {
   'use strict';
 
+  /**
+   * Signal Service Module
+   * @name SignalServiceModule
+   * @author João Carvalho
+   */
   angular.module('SignalServiceModule', [])
     .constant('Signals', signals)
     .provider('SignalService', SignalServiceProvider);
 
+  /**
+   * Service provider for Signal Service
+   * @name SignalServiceProvider
+   */
   /* @ngInject */
   function SignalServiceProvider( Signals ) {
     var EnumSignals = {};
+
 
     function SignalService() {
       var signalsObject;
@@ -46,7 +56,14 @@
         return true;
       }
 
-      function Signal() {
+      function extendOptions( options ) {
+        return angular.extend({
+          listenerContext: undefined,
+          priority: undefined
+        }, options || {});
+      }
+
+      function Instance() {
         Object.defineProperty(this, 'SIGNALS', {
           value: EnumSignals
         });
@@ -60,23 +77,60 @@
         this.unregister = function( key ) {
           signalsObject[key] && (delete signalsObject[key]);
         };*/
-        this.listenTo = function( key, callback ) {
-          register(key) && (signalsObject[key].add(callback));
-        };
-        this.unlistenTo = function( key, callback ) {
-          signalsObject[key] && (signalsObject[key].remove(callback));
-        };
         this.emit = function( key, data ) {
           register(key) && (signalsObject[key].dispatch(data));
         };
+        this.listen = function( key, callback, options ) {
+          if (register(key)){
+            options = extendOptions(options);
+            options.method = options.addOnce === true? 'addOnce': 'add';
+            return signalsObject[key][options.method](callback, options.listenerContext, options.priority);
+          }
+        };
+        this.unlisten = function( key, callback, options ) {
+          options = extendOptions(options);
+          if (signalsObject[key]) {
+            return signalsObject[key].remove(callback, options.listenerContext);
+          }
+        };
+        this.unlistenAll = function( key ) {
+          if (signalsObject[key]) {
+            return signalsObject[key].removeAll();
+          }
+        };
+        this.isListening = function( key, callback, options ) {
+          if (signalsObject[key]) {
+            options = extendOptions(options);
+            return signalsObject[key].has(callback, options.listenerContext);
+          }
+        };
+        this.getNumListeners = function(key) {
+          return signalsObject[key]? signalsObject[key].getNumListeners() : 0;
+        };
         this.dispose = function( key ) {
-          signalsObject[key] && (signalsObject[key].dispose() && delete signalsObject[key]);
+          if (signalsObject[key]) {
+            signalsObject[key].dispose();
+            delete signalsObject[key];
+          }
+        };
+        this.forget = function( key ) {
+          if (signalsObject[key]) {
+            signalsObject[key].forget();
+          }
+        };
+        this.getSignal = function( key ) {
+          return signalsObject[key];
         };
       }
 
-      return new Signal();
+      return new Instance();
     }
 
+    /**
+     * Permits configuration for the service instance
+     * @name config
+     * @param {object} config Identification ids for permitted signals
+     */
     this.config = function( config ) {
       angular.extend(EnumSignals, config);
     };
