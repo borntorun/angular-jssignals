@@ -1,0 +1,11 @@
+node_modules
+bower_components
+.tmp
+.idea
+*.sublime-*
+TODO
+npm*.log
+./*.log
+temp
+coverage
+docs
