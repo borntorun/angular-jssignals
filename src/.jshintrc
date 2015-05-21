@@ -20,6 +20,7 @@
   "smarttabs": true,
   "expr": true,
   "globals": {
+    "define": true,
     "jQuery": true,
     "angular": true,
     "console": true,
