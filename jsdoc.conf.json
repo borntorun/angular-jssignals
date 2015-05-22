@@ -1,0 +1,29 @@
+{
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "plugins": ["plugins/markdown"],
+
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false,
+    "dateFormat": "ddd MMM Do YYYY",
+    "outputSourceFiles": true,
+    "outputSourcePath": true,
+    "systemName": "angular-jssignals",
+    "footer": "",
+    "copyright": "The MIT License (MIT) Copyright © 2015 João Carvalho",
+    "navType": "vertical",
+    "theme": "spacelab",
+    "linenums": true,
+    "collapseSymbols": true,
+    "inverseNav": true,
+    "highlightTutorialCode": true,
+    "syntaxTheme": "default",
+    "protocol": "fred://"
+  },
+  "markdown": {
+    "parser": "gfm",
+    "hardwrap": true
+  }
+}
