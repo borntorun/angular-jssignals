@@ -43,10 +43,9 @@ describe('angular-jssignals', function() {
     it('service should be defined', function() {
       expect(signalservice).toBeDefined();
     });
-    it('on call test() should return "test"', function() {
+    it('should have signals configured', function() {
       expect(signalservice.SIGNALS).toEqual(thesignalskeys);
     });
-
   });
   describe('Test service functionality ==> ', function() {
     var value;
@@ -148,8 +147,9 @@ describe('angular-jssignals', function() {
     });
 
     it('should clear things on dispose', function( done ) {
+
       signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded);
-      var theSignal1 = signalservice.getSignal(signalservice.SIGNALS.ITEMADDED);
+      var theSignal1 = signalservice.get(signalservice.SIGNALS.ITEMADDED);
 
       signalservice.emit(signalservice.SIGNALS.ITEMADDED, {value: 'called'});
 
@@ -160,7 +160,7 @@ describe('angular-jssignals', function() {
         signalservice.dispose(signalservice.SIGNALS.ITEMADDED);
 
         signalservice.emit(signalservice.SIGNALS.ITEMADDED, {value: 'called'});
-        var theSignal2 = signalservice.getSignal(signalservice.SIGNALS.ITEMADDED);
+        var theSignal2 = signalservice.get(signalservice.SIGNALS.ITEMADDED);
 
         setTimeout(function() {
           //since dispose clear listeners the listener should not be called even if the signal is recreated on the second emit
@@ -341,7 +341,7 @@ describe('angular-jssignals', function() {
         value += v;
       });
 
-      var signal = signalservice.getSignal(signalservice.SIGNALS.ITEMADDED);
+      var signal = signalservice.get(signalservice.SIGNALS.ITEMADDED);
       signal.memorize = true;
 
       signalservice.emit(signalservice.SIGNALS.ITEMADDED, 1);
@@ -431,4 +431,3 @@ describe('angular-jssignals', function() {
     }
   };
 });
-
