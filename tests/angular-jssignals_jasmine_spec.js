@@ -2,7 +2,7 @@
 'use strict';
 
 describe('angular-jssignals:', function() {
-  var signalservice, SignalServiceProvider, $compile, $scope, $log, oInjectedForSpies = {};
+  var signalsService, SignalsServiceProvider;
   var config = [
     {init: true, signals: {ITEMADDED: 'itemadded', ITEMREMOVED: 'itemremoved'}},
     {init: true, signals: {}},
@@ -18,25 +18,25 @@ describe('angular-jssignals:', function() {
   config.forEach(function( item, index ) {
     describe('Test provider configuration - [config=' + index + '] ==> ', function() {
 
-      beforeEach(module('SignalServiceModule', function( _SignalServiceProvider_ ) {
-        SignalServiceProvider = _SignalServiceProvider_;
-        (item.signals || item.init) && (SignalServiceProvider.config(item));
+      beforeEach(module('jsSignalsServiceModule', function( _SignalsServiceProvider_ ) {
+        SignalsServiceProvider = _SignalsServiceProvider_;
+        (item.signals || item.init) && (SignalsServiceProvider.config(item));
       }));
 
       beforeEach(function() {
-        inject(function( _SignalService_ ) {
-          signalservice = _SignalService_;
+        inject(function( _SignalsService_ ) {
+          signalsService = _SignalsService_;
         });
       });
 
       it('service should be defined', function() {
-        expect(signalservice).toBeDefined();
+        expect(signalsService).toBeDefined();
       });
 
       it('should have provider configured', function() {
-        expect(signalservice.SIGNALS).toEqual(item.signals || {});
-        for ( var k in signalservice.SIGNALS ) {
-          expect((signalservice[signalservice.SIGNALS[k]] ? true : false) === (item.init || false)).toBeTruthy();
+        expect(signalsService.SIGNALS).toEqual(item.signals || {});
+        for ( var k in signalsService.SIGNALS ) {
+          expect((signalsService[signalsService.SIGNALS[k]] ? true : false) === (item.init || false)).toBeTruthy();
         }
       });
     });
@@ -46,7 +46,7 @@ describe('angular-jssignals:', function() {
 });
 
 describe('angular-jssignals:', function() {
-  var signalservice, SignalServiceProvider, $compile, $scope, $log, oInjectedForSpies = {};
+  var signalsService, SignalsServiceProvider;
   var config = {
     signals: {
       ITEMADDED: 'itemadded',
@@ -58,14 +58,14 @@ describe('angular-jssignals:', function() {
    * Get the module before each test
    * - configure service provider
    */
-  beforeEach(module('SignalServiceModule', function( _SignalServiceProvider_ ) {
-    SignalServiceProvider = _SignalServiceProvider_;
-    SignalServiceProvider.config(config);
+  beforeEach(module('jsSignalsServiceModule', function( _SignalsServiceProvider_ ) {
+    SignalsServiceProvider = _SignalsServiceProvider_;
+    SignalsServiceProvider.config(config);
   }));
 
   beforeEach(function() {
-    inject(function( _SignalService_ ) {
-      signalservice = _SignalService_;
+    inject(function( _SignalsService_ ) {
+      signalsService = _SignalsService_;
     });
   });
 
@@ -87,15 +87,15 @@ describe('angular-jssignals:', function() {
 
     afterEach(function() {
       try {
-        signalservice.unlisten(signalservice.SIGNALS.ITEMADDED, callOnItemAdded);
-        signalservice.unlisten(signalservice.SIGNALS.ITEMREMOVED, callOnItemRemoved);
+        signalsService.unlisten(signalsService.SIGNALS.ITEMADDED, callOnItemAdded);
+        signalsService.unlisten(signalsService.SIGNALS.ITEMREMOVED, callOnItemRemoved);
       } catch( e ) {
       }
     });
 
     it('should call registered callback on emit event', function( done ) {
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded);
-      signalservice.emit(signalservice.SIGNALS.ITEMADDED, {value: 'called'});
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded);
+      signalsService.emit(signalsService.SIGNALS.ITEMADDED, {value: 'called'});
 
       setTimeout(function() {
         expect(value).toBe('called');
@@ -107,30 +107,30 @@ describe('angular-jssignals:', function() {
       function IamNotListening() {
       }
 
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded);
-      expect(signalservice.isListening(signalservice.SIGNALS.ITEMADDED, callOnItemAdded)).toBeTruthy();
-      expect(signalservice.isListening(signalservice.SIGNALS.ITEMADDED, IamNotListening)).toBeFalsy();
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded);
+      expect(signalsService.isListening(signalsService.SIGNALS.ITEMADDED, callOnItemAdded)).toBeTruthy();
+      expect(signalsService.isListening(signalsService.SIGNALS.ITEMADDED, IamNotListening)).toBeFalsy();
     });
 
     it('should evaluate number of listeners that are registered', function() {
       function IamListening() {
       }
 
-      expect(signalservice.getNumListeners(signalservice.SIGNALS.ITEMADDED)).toBe(0);
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded);
-      expect(signalservice.getNumListeners(signalservice.SIGNALS.ITEMADDED)).toBe(1);
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, IamListening);
-      expect(signalservice.getNumListeners(signalservice.SIGNALS.ITEMADDED)).toBe(2);
+      expect(signalsService.getNumListeners(signalsService.SIGNALS.ITEMADDED)).toBe(0);
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded);
+      expect(signalsService.getNumListeners(signalsService.SIGNALS.ITEMADDED)).toBe(1);
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, IamListening);
+      expect(signalsService.getNumListeners(signalsService.SIGNALS.ITEMADDED)).toBe(2);
     });
 
     it('should call registered callback on emit event more than once', function( done ) {
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded);
-      signalservice.emit(signalservice.SIGNALS.ITEMADDED, {value: 'called'});
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded);
+      signalsService.emit(signalsService.SIGNALS.ITEMADDED, {value: 'called'});
 
       setTimeout(function() {
         expect(value).toBe('called');
         value = undefined;
-        signalservice.emit(signalservice.SIGNALS.ITEMADDED, {value: 'called'});
+        signalsService.emit(signalsService.SIGNALS.ITEMADDED, {value: 'called'});
         setTimeout(function() {
           expect(value).toBe('called');
           done();
@@ -140,8 +140,8 @@ describe('angular-jssignals:', function() {
 
     it('should go quietly on listen/emit event with invalid key', function( done ) {
       var invalidKey = 'invalid-key-event';
-      signalservice.listen(invalidKey, callOnItemAdded);
-      signalservice.emit(invalidKey, {value: 'called'});
+      signalsService.listen(invalidKey, callOnItemAdded);
+      signalsService.emit(invalidKey, {value: 'called'});
 
       setTimeout(function() {
         expect(value).not.toBeDefined();
@@ -150,14 +150,14 @@ describe('angular-jssignals:', function() {
     });
 
     it('should not call registered callback on emit event after unlisten', function( done ) {
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded);
-      signalservice.emit(signalservice.SIGNALS.ITEMADDED, {value: 'called'});
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded);
+      signalsService.emit(signalsService.SIGNALS.ITEMADDED, {value: 'called'});
 
       setTimeout(function() {
         expect(value).toBe('called');
         value = undefined;
-        signalservice.unlisten(signalservice.SIGNALS.ITEMADDED, callOnItemAdded);
-        signalservice.emit(signalservice.SIGNALS.ITEMADDED, {value: 'called'});
+        signalsService.unlisten(signalsService.SIGNALS.ITEMADDED, callOnItemAdded);
+        signalsService.emit(signalsService.SIGNALS.ITEMADDED, {value: 'called'});
 
         setTimeout(function() {
           expect(value).not.toBeDefined();
@@ -169,19 +169,20 @@ describe('angular-jssignals:', function() {
 
     it('should clear things on dispose', function( done ) {
 
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded);
-      var theSignal1 = signalservice.get(signalservice.SIGNALS.ITEMADDED);
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded);
+      var theSignal1 = signalsService.get(signalsService.SIGNALS.ITEMADDED);
+      //console.log(theSignal1);
 
-      signalservice.emit(signalservice.SIGNALS.ITEMADDED, {value: 'called'});
+      signalsService.emit(signalsService.SIGNALS.ITEMADDED, {value: 'called'});
 
       setTimeout(function() {
         expect(value).toBe('called');
         value = undefined;
 
-        signalservice.dispose(signalservice.SIGNALS.ITEMADDED);
+        signalsService.dispose(signalsService.SIGNALS.ITEMADDED);
 
-        signalservice.emit(signalservice.SIGNALS.ITEMADDED, {value: 'called'});
-        var theSignal2 = signalservice.get(signalservice.SIGNALS.ITEMADDED);
+        signalsService.emit(signalsService.SIGNALS.ITEMADDED, {value: 'called'});
+        var theSignal2 = signalsService.get(signalsService.SIGNALS.ITEMADDED);
 
         setTimeout(function() {
           //since dispose clear listeners the listener should not be called even if the signal is recreated on the second emit
@@ -197,15 +198,15 @@ describe('angular-jssignals:', function() {
     it('should call registered callback only once on emit event', function( done ) {
       var value = 0;
 
-      function callOnItemAdded( data ) {
+      function callOnItemAdded() {
         value++;
       }
 
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded, {addOnce: true});
-      signalservice.emit(signalservice.SIGNALS.ITEMADDED, {});
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded, {addOnce: true});
+      signalsService.emit(signalsService.SIGNALS.ITEMADDED, {});
       setTimeout(function() {
         expect(value).toBe(1);
-        signalservice.emit(signalservice.SIGNALS.ITEMADDED, {});
+        signalsService.emit(signalsService.SIGNALS.ITEMADDED, {});
         setTimeout(function() {
           expect(value).toBe(1);
           done();
@@ -224,9 +225,9 @@ describe('angular-jssignals:', function() {
         value = value / 2;
       }
 
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnEventAdd3);
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnEventDivideBy2);
-      signalservice.emit(signalservice.SIGNALS.ITEMADDED, {});
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnEventAdd3);
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnEventDivideBy2);
+      signalsService.emit(signalsService.SIGNALS.ITEMADDED, {});
 
       setTimeout(function() {
         expect(value).toBe(2);
@@ -245,9 +246,9 @@ describe('angular-jssignals:', function() {
         value = value / 2;
       }
 
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnEventAdd3);
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnEventDivideBy2, {priority: 1});
-      signalservice.emit(signalservice.SIGNALS.ITEMADDED, {});
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnEventAdd3);
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnEventDivideBy2, {priority: 1});
+      signalsService.emit(signalsService.SIGNALS.ITEMADDED, {});
 
       setTimeout(function() {
         expect(value).toBe(3.5);
@@ -261,8 +262,8 @@ describe('angular-jssignals:', function() {
         value = this;
       }
 
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: {me: true}});
-      signalservice.emit(signalservice.SIGNALS.ITEMADDED, {value: 'called'});
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: {me: true}});
+      signalsService.emit(signalsService.SIGNALS.ITEMADDED, {value: 'called'});
 
       setTimeout(function() {
         expect(value).toBeDefined();
@@ -277,9 +278,9 @@ describe('angular-jssignals:', function() {
         value = from + name;
       }
 
-      var signalbinding = signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded);
+      var signalbinding = signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded);
       signalbinding.params = [ 'From John: ' ];
-      signalservice.emit(signalservice.SIGNALS.ITEMADDED, 'Hi!');
+      signalsService.emit(signalsService.SIGNALS.ITEMADDED, 'Hi!');
 
       setTimeout(function() {
         expect(value).toBe('From John: Hi!');
@@ -290,32 +291,32 @@ describe('angular-jssignals:', function() {
     it('should allow for remove correct listener/context', function( done ) {
       var value = 0;
       /*jshint validthis:true*/
-      function callOnItemAdded( data ) {
+      function callOnItemAdded() {
         value += this.me;
       }
 
       //each context add its me property to value variable
       var context1 = {me: 1}, context2 = {me: 2}, context3 = {me: 3}, context4 = {me: -10};
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: context1});
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: context2});
-      signalservice.emit(signalservice.SIGNALS.ITEMADDED, {});
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: context1});
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: context2});
+      signalsService.emit(signalsService.SIGNALS.ITEMADDED, {});
 
       setTimeout(function() {
         expect(value).toBe(3);
-        signalservice.unlisten(signalservice.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: context1});
-        signalservice.emit(signalservice.SIGNALS.ITEMADDED, {});
+        signalsService.unlisten(signalsService.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: context1});
+        signalsService.emit(signalsService.SIGNALS.ITEMADDED, {});
 
         setTimeout(function() {
           expect(value).toBe(5);
-          signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: context3});
-          signalservice.emit(signalservice.SIGNALS.ITEMADDED, {});
+          signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: context3});
+          signalsService.emit(signalsService.SIGNALS.ITEMADDED, {});
 
           setTimeout(function() {
             expect(value).toBe(10);
-            signalservice.unlisten(signalservice.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: context2});
-            signalservice.unlisten(signalservice.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: context3});
-            signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: context4});
-            signalservice.emit(signalservice.SIGNALS.ITEMADDED, {});
+            signalsService.unlisten(signalsService.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: context2});
+            signalsService.unlisten(signalsService.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: context3});
+            signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded, {listenerContext: context4});
+            signalsService.emit(signalsService.SIGNALS.ITEMADDED, {});
 
             setTimeout(function() {
               expect(value).toBe(0);
@@ -337,15 +338,15 @@ describe('angular-jssignals:', function() {
         value++;
       }
 
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded1);
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, callOnItemAdded2);
-      signalservice.emit(signalservice.SIGNALS.ITEMADDED, {});
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded1);
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded2);
+      signalsService.emit(signalsService.SIGNALS.ITEMADDED, {});
 
       setTimeout(function() {
         expect(value).toBe(2);
         value = 0;
-        signalservice.unlistenAll(signalservice.SIGNALS.ITEMADDED);
-        signalservice.emit(signalservice.SIGNALS.ITEMADDED, {});
+        signalsService.unlistenAll(signalsService.SIGNALS.ITEMADDED);
+        signalsService.emit(signalsService.SIGNALS.ITEMADDED, {});
 
         setTimeout(function() {
           expect(value).toBe(0);
@@ -358,20 +359,20 @@ describe('angular-jssignals:', function() {
       var value = 0;
       /*jshint validthis:true*/
 
-      signalservice.listen(signalservice.SIGNALS.ITEMADDED, function( v ) {
+      signalsService.listen(signalsService.SIGNALS.ITEMADDED, function( v ) {
         value += v;
       });
 
-      var signal = signalservice.get(signalservice.SIGNALS.ITEMADDED);
+      var signal = signalsService.get(signalsService.SIGNALS.ITEMADDED);
       signal.memorize = true;
 
-      signalservice.emit(signalservice.SIGNALS.ITEMADDED, 1);
+      signalsService.emit(signalsService.SIGNALS.ITEMADDED, 1);
 
       setTimeout(function() {
         //first listener increments 1
         expect(value).toBe(1);
 
-        signalservice.listen(signalservice.SIGNALS.ITEMADDED, function( v ) {
+        signalsService.listen(signalsService.SIGNALS.ITEMADDED, function( v ) {
           value += (2 * v);
         });
 
@@ -379,19 +380,19 @@ describe('angular-jssignals:', function() {
           //second listener increments 2 (last emit v=1 was memorized)
           expect(value).toBe(3);
 
-          signalservice.emit(signalservice.SIGNALS.ITEMADDED, 2);
+          signalsService.emit(signalsService.SIGNALS.ITEMADDED, 2);
 
           setTimeout(function() {
             //first listener increments 2 v=2
             //second listener increments 4 --> 2*v
             expect(value).toBe(9);
 
-            signalservice.emit(signalservice.SIGNALS.ITEMADDED, 3);
+            signalsService.emit(signalsService.SIGNALS.ITEMADDED, 3);
             //first listener increments 3 v=3
             //second listener increments 6 --> 2*v
             //here value=18
 
-            signalservice.listen(signalservice.SIGNALS.ITEMADDED, function( v ) {
+            signalsService.listen(signalsService.SIGNALS.ITEMADDED, function( v ) {
               value += (-6 * v);
             });
             setTimeout(function() {
@@ -399,14 +400,14 @@ describe('angular-jssignals:', function() {
               //decrements 18 v=3 ---> 6*v
               expect(value).toBe(0);
 
-              signalservice.forget(signalservice.SIGNALS.ITEMADDED);
+              signalsService.forget(signalsService.SIGNALS.ITEMADDED);
 
               //as forget as called the last emit value is forgotted and this listen is not automatically called with than tvalue (3)
-              signalservice.listen(signalservice.SIGNALS.ITEMADDED, function( v ) {
+              signalsService.listen(signalsService.SIGNALS.ITEMADDED, function( v ) {
                 value += 3 * v;
               });
 
-              signalservice.emit(signalservice.SIGNALS.ITEMADDED, 4);
+              signalsService.emit(signalsService.SIGNALS.ITEMADDED, 4);
 
               setTimeout(function() {
                 //first listener increments 4 value=4
@@ -429,12 +430,10 @@ describe('angular-jssignals:', function() {
 
     function callOnItemAdded( data ) {
       value = data.value;
-      //expect(data.value).toBe('called');
     }
 
     function callOnItemRemoved( data ) {
       value = data.value;
-      //expect(data.value).toBe('called');
     }
 
     beforeEach(function() {
@@ -443,20 +442,16 @@ describe('angular-jssignals:', function() {
 
     afterEach(function() {
       try {
-        signalservice.unlisten(signalservice.SIGNALS.ITEMADDED, callOnItemAdded);
-        signalservice.unlisten(signalservice.SIGNALS.ITEMREMOVED, callOnItemRemoved);
+        signalsService.unlisten(signalsService.SIGNALS.ITEMADDED, callOnItemAdded);
+        signalsService.unlisten(signalsService.SIGNALS.ITEMREMOVED, callOnItemRemoved);
       } catch( e ) {
       }
     });
 
     it('should call registered callback on emit event', function( done ) {
-      signalservice.register(signalservice.SIGNALS.ITEMADDED);
-      signalservice.itemadded.listen(callOnItemAdded);
-
-      console.log(signalservice);
-      console.log(Object.getPrototypeOf(signalservice.itemadded));
-
-      signalservice.itemadded.emit({value: 'called'});
+      signalsService.register(signalsService.SIGNALS.ITEMADDED);
+      signalsService.itemadded.listen(callOnItemAdded);
+      signalsService.itemadded.emit({value: 'called'});
 
       setTimeout(function() {
         expect(value).toBe('called');
@@ -468,33 +463,33 @@ describe('angular-jssignals:', function() {
       function IamNotListening() {
       }
 
-      signalservice.register(signalservice.SIGNALS.ITEMADDED);
-      signalservice.itemadded.listen(callOnItemAdded);
-      expect(signalservice.itemadded.isListening(callOnItemAdded)).toBeTruthy();
-      expect(signalservice.itemadded.isListening(IamNotListening)).toBeFalsy();
+      signalsService.register(signalsService.SIGNALS.ITEMADDED);
+      signalsService.itemadded.listen(callOnItemAdded);
+      expect(signalsService.itemadded.isListening(callOnItemAdded)).toBeTruthy();
+      expect(signalsService.itemadded.isListening(IamNotListening)).toBeFalsy();
     });
 
     it('should evaluate number of listeners that are registered', function() {
       function IamListening() {
       }
 
-      signalservice.register(signalservice.SIGNALS.ITEMADDED);
-      expect(signalservice.itemadded.getNumListeners()).toBe(0);
-      signalservice.itemadded.listen(callOnItemAdded);
-      expect(signalservice.itemadded.getNumListeners()).toBe(1);
-      signalservice.itemadded.listen(IamListening);
-      expect(signalservice.itemadded.getNumListeners()).toBe(2);
+      signalsService.register(signalsService.SIGNALS.ITEMADDED);
+      expect(signalsService.itemadded.getNumListeners()).toBe(0);
+      signalsService.itemadded.listen(callOnItemAdded);
+      expect(signalsService.itemadded.getNumListeners()).toBe(1);
+      signalsService.itemadded.listen(IamListening);
+      expect(signalsService.itemadded.getNumListeners()).toBe(2);
     });
 
     it('should call registered callback on emit event more than once', function( done ) {
-      signalservice.register(signalservice.SIGNALS.ITEMADDED);
-      signalservice.itemadded.listen(callOnItemAdded);
-      signalservice.itemadded.emit({value: 'called'});
+      signalsService.register(signalsService.SIGNALS.ITEMADDED);
+      signalsService.itemadded.listen(callOnItemAdded);
+      signalsService.itemadded.emit({value: 'called'});
 
       setTimeout(function() {
         expect(value).toBe('called');
         value = undefined;
-        signalservice.itemadded.emit({value: 'called'});
+        signalsService.itemadded.emit({value: 'called'});
         setTimeout(function() {
           expect(value).toBe('called');
           done();
@@ -503,15 +498,15 @@ describe('angular-jssignals:', function() {
     });
 
     it('should not call registered callback on emit event after unlisten', function( done ) {
-      signalservice.register(signalservice.SIGNALS.ITEMADDED);
-      signalservice.itemadded.listen(callOnItemAdded);
-      signalservice.itemadded.emit({value: 'called'});
+      signalsService.register(signalsService.SIGNALS.ITEMADDED);
+      signalsService.itemadded.listen(callOnItemAdded);
+      signalsService.itemadded.emit({value: 'called'});
 
       setTimeout(function() {
         expect(value).toBe('called');
         value = undefined;
-        signalservice.itemadded.unlisten(callOnItemAdded);
-        signalservice.itemadded.emit({value: 'called'});
+        signalsService.itemadded.unlisten(callOnItemAdded);
+        signalsService.itemadded.emit({value: 'called'});
 
         setTimeout(function() {
           expect(value).not.toBeDefined();
@@ -522,20 +517,20 @@ describe('angular-jssignals:', function() {
     });
 
     it('should clear things on dispose', function( done ) {
-      signalservice.register(signalservice.SIGNALS.ITEMADDED);
-      signalservice.itemadded.listen(callOnItemAdded);
-      var theSignal1 = signalservice.itemadded.get();
+      signalsService.register(signalsService.SIGNALS.ITEMADDED);
+      signalsService.itemadded.listen(callOnItemAdded);
+      var theSignal1 = signalsService.itemadded.get();
 
-      signalservice.itemadded.emit({value: 'called'});
+      signalsService.itemadded.emit({value: 'called'});
 
       setTimeout(function() {
         expect(value).toBe('called');
         value = undefined;
 
-        signalservice.itemadded.dispose();
+        signalsService.itemadded.dispose();
 
-        signalservice.itemadded.emit({value: 'called'});
-        var theSignal2 = signalservice.itemadded.get();
+        signalsService.itemadded.emit({value: 'called'});
+        var theSignal2 = signalsService.itemadded.get();
 
         setTimeout(function() {
           //since dispose clear listeners the listener should not be called even if the signal is recreated on the second emit
@@ -551,16 +546,16 @@ describe('angular-jssignals:', function() {
     it('should call registered callback only once on emit event', function( done ) {
       var value = 0;
 
-      function callOnItemAdded( data ) {
+      function callOnItemAdded() {
         value++;
       }
 
-      signalservice.register(signalservice.SIGNALS.ITEMADDED);
-      signalservice.itemadded.listen(callOnItemAdded, {addOnce: true});
-      signalservice.itemadded.emit({});
+      signalsService.register(signalsService.SIGNALS.ITEMADDED);
+      signalsService.itemadded.listen(callOnItemAdded, {addOnce: true});
+      signalsService.itemadded.emit({});
       setTimeout(function() {
         expect(value).toBe(1);
-        signalservice.itemadded.emit({});
+        signalsService.itemadded.emit({});
         setTimeout(function() {
           expect(value).toBe(1);
           done();
@@ -579,10 +574,10 @@ describe('angular-jssignals:', function() {
         value = value / 2;
       }
 
-      signalservice.register(signalservice.SIGNALS.ITEMADDED);
-      signalservice.itemadded.listen(callOnEventAdd3);
-      signalservice.itemadded.listen(callOnEventDivideBy2);
-      signalservice.itemadded.emit({});
+      signalsService.register(signalsService.SIGNALS.ITEMADDED);
+      signalsService.itemadded.listen(callOnEventAdd3);
+      signalsService.itemadded.listen(callOnEventDivideBy2);
+      signalsService.itemadded.emit({});
 
       setTimeout(function() {
         expect(value).toBe(2);
@@ -601,10 +596,10 @@ describe('angular-jssignals:', function() {
         value = value / 2;
       }
 
-      signalservice.register(signalservice.SIGNALS.ITEMADDED);
-      signalservice.itemadded.listen(callOnEventAdd3);
-      signalservice.itemadded.listen(callOnEventDivideBy2, {priority: 1});
-      signalservice.itemadded.emit({});
+      signalsService.register(signalsService.SIGNALS.ITEMADDED);
+      signalsService.itemadded.listen(callOnEventAdd3);
+      signalsService.itemadded.listen(callOnEventDivideBy2, {priority: 1});
+      signalsService.itemadded.emit({});
 
       setTimeout(function() {
         expect(value).toBe(3.5);
@@ -618,9 +613,9 @@ describe('angular-jssignals:', function() {
         value = this;
       }
 
-      signalservice.register(signalservice.SIGNALS.ITEMADDED);
-      signalservice.itemadded.listen(callOnItemAdded, {listenerContext: {me: true}});
-      signalservice.itemadded.emit({value: 'called'});
+      signalsService.register(signalsService.SIGNALS.ITEMADDED);
+      signalsService.itemadded.listen(callOnItemAdded, {listenerContext: {me: true}});
+      signalsService.itemadded.emit({value: 'called'});
 
       setTimeout(function() {
         expect(value).toBeDefined();
@@ -635,10 +630,10 @@ describe('angular-jssignals:', function() {
         value = from + name;
       }
 
-      signalservice.register(signalservice.SIGNALS.ITEMADDED);
-      var signalbinding = signalservice.itemadded.listen(callOnItemAdded);
+      signalsService.register(signalsService.SIGNALS.ITEMADDED);
+      var signalbinding = signalsService.itemadded.listen(callOnItemAdded);
       signalbinding.params = [ 'From John: ' ];
-      signalservice.itemadded.emit('Hi!');
+      signalsService.itemadded.emit('Hi!');
 
       setTimeout(function() {
         expect(value).toBe('From John: Hi!');
@@ -649,33 +644,33 @@ describe('angular-jssignals:', function() {
     it('should allow for remove correct listener/context', function( done ) {
       var value = 0;
       /*jshint validthis:true*/
-      function callOnItemAdded( data ) {
+      function callOnItemAdded() {
         value += this.me;
       }
 
       //each context add its me property to value variable
       var context1 = {me: 1}, context2 = {me: 2}, context3 = {me: 3}, context4 = {me: -10};
-      signalservice.register(signalservice.SIGNALS.ITEMADDED);
-      signalservice.itemadded.listen(callOnItemAdded, {listenerContext: context1});
-      signalservice.itemadded.listen(callOnItemAdded, {listenerContext: context2});
-      signalservice.itemadded.emit({});
+      signalsService.register(signalsService.SIGNALS.ITEMADDED);
+      signalsService.itemadded.listen(callOnItemAdded, {listenerContext: context1});
+      signalsService.itemadded.listen(callOnItemAdded, {listenerContext: context2});
+      signalsService.itemadded.emit({});
 
       setTimeout(function() {
         expect(value).toBe(3);
-        signalservice.itemadded.unlisten(callOnItemAdded, {listenerContext: context1});
-        signalservice.itemadded.emit({});
+        signalsService.itemadded.unlisten(callOnItemAdded, {listenerContext: context1});
+        signalsService.itemadded.emit({});
 
         setTimeout(function() {
           expect(value).toBe(5);
-          signalservice.itemadded.listen(callOnItemAdded, {listenerContext: context3});
-          signalservice.itemadded.emit({});
+          signalsService.itemadded.listen(callOnItemAdded, {listenerContext: context3});
+          signalsService.itemadded.emit({});
 
           setTimeout(function() {
             expect(value).toBe(10);
-            signalservice.itemadded.unlisten(callOnItemAdded, {listenerContext: context2});
-            signalservice.itemadded.unlisten(callOnItemAdded, {listenerContext: context3});
-            signalservice.itemadded.listen(callOnItemAdded, {listenerContext: context4});
-            signalservice.itemadded.emit({});
+            signalsService.itemadded.unlisten(callOnItemAdded, {listenerContext: context2});
+            signalsService.itemadded.unlisten(callOnItemAdded, {listenerContext: context3});
+            signalsService.itemadded.listen(callOnItemAdded, {listenerContext: context4});
+            signalsService.itemadded.emit({});
 
             setTimeout(function() {
               expect(value).toBe(0);
@@ -697,16 +692,16 @@ describe('angular-jssignals:', function() {
         value++;
       }
 
-      signalservice.register(signalservice.SIGNALS.ITEMADDED);
-      signalservice.itemadded.listen(callOnItemAdded1);
-      signalservice.itemadded.listen(callOnItemAdded2);
-      signalservice.itemadded.emit({});
+      signalsService.register(signalsService.SIGNALS.ITEMADDED);
+      signalsService.itemadded.listen(callOnItemAdded1);
+      signalsService.itemadded.listen(callOnItemAdded2);
+      signalsService.itemadded.emit({});
 
       setTimeout(function() {
         expect(value).toBe(2);
         value = 0;
-        signalservice.itemadded.unlistenAll();
-        signalservice.itemadded.emit({});
+        signalsService.itemadded.unlistenAll();
+        signalsService.itemadded.emit({});
 
         setTimeout(function() {
           expect(value).toBe(0);
@@ -718,21 +713,21 @@ describe('angular-jssignals:', function() {
     it('should memorize params emited and forget should work', function( done ) {
       var value = 0;
       /*jshint validthis:true*/
-      signalservice.register(signalservice.SIGNALS.ITEMADDED);
-      signalservice.itemadded.listen(function( v ) {
+      signalsService.register(signalsService.SIGNALS.ITEMADDED);
+      signalsService.itemadded.listen(function( v ) {
         value += v;
       });
 
-      var signal = signalservice.itemadded.get();
+      var signal = signalsService.itemadded.get();
       signal.memorize = true;
 
-      signalservice.itemadded.emit(1);
+      signalsService.itemadded.emit(1);
 
       setTimeout(function() {
         //first listener increments 1
         expect(value).toBe(1);
 
-        signalservice.itemadded.listen(function( v ) {
+        signalsService.itemadded.listen(function( v ) {
           value += (2 * v);
         });
 
@@ -740,19 +735,19 @@ describe('angular-jssignals:', function() {
           //second listener increments 2 (last emit v=1 was memorized)
           expect(value).toBe(3);
 
-          signalservice.itemadded.emit(2);
+          signalsService.itemadded.emit(2);
 
           setTimeout(function() {
             //first listener increments 2 v=2
             //second listener increments 4 --> 2*v
             expect(value).toBe(9);
 
-            signalservice.itemadded.emit(3);
+            signalsService.itemadded.emit(3);
             //first listener increments 3 v=3
             //second listener increments 6 --> 2*v
             //here value=18
 
-            signalservice.itemadded.listen(function( v ) {
+            signalsService.itemadded.listen(function( v ) {
               value += (-6 * v);
             });
             setTimeout(function() {
@@ -760,14 +755,14 @@ describe('angular-jssignals:', function() {
               //decrements 18 v=3 ---> 6*v
               expect(value).toBe(0);
 
-              signalservice.itemadded.forget();
+              signalsService.itemadded.forget();
 
               //as forget as called the last emit value is forgotted and this listen is not automatically called with than tvalue (3)
-              signalservice.itemadded.listen(function( v ) {
+              signalsService.itemadded.listen(function( v ) {
                 value += 3 * v;
               });
 
-              signalservice.itemadded.emit(4);
+              signalsService.itemadded.emit(4);
 
               setTimeout(function() {
                 //first listener increments 4 value=4

@@ -17,55 +17,82 @@
   'use strict';
 
   /**
-   * Signal Service Module
-   * @name SignalServiceModule
-   * @author João Carvalho
+   * jsSignalsServiceModule
+   * @module jsSignalsServiceModule
    */
-  angular.module('SignalServiceModule', [])
+  angular.module('jsSignalsServiceModule', [])
     .constant('Signals', signals)
-    .provider('SignalService', SignalServiceProvider);
+    .provider('SignalsService', SignalsServiceProvider);
 
   /**
-   * Service provider for Signal Service
-   * @name SignalServiceProvider
+   * Service provider function for SignalsService
+   * @name SignalsServiceProvider
    * @param Signals - signals in js-signals
    */
   /* @ngInject */
-  function SignalServiceProvider( Signals ) {
+  function SignalsServiceProvider( Signals ) {
+    /*jshint validthis:true*/
     var EnumSignals = {},
       initSignals = false;
 
-    function SignalServiceFactory() {
-      /*jshint validthis:true*/
-      var _oSignals;
+    function SignalsServiceFactory() {
+      var _oSignals = {};
 
-      _oSignals = {};
+      function extendOptions( options ) {
+        return angular.extend({
+          listenerContext: undefined,
+          priority: undefined
+        }, options || {});
+      }
 
-      //interface for the Signal propeyty object
-      /*var signalInterface = {
-        emit: dispatch,
-        listen: add,
-        unlisten: remove,
-        unlistenAll: removeAll,
-        isListening: has,
-        getNumListeners: getNumListeners,
-        dispose: dispose,
-        forget: forget,
-        get: get
-      };*/
+      /**
+       * @typedef listenoptionsHash
+       * @type {object}
+       * @property {boolean} [addOnce=false] - if true, listen will call <a href="http://millermedeiros.github.io/js-signals/docs/symbols/Signal.html#addOnce">addOnce</a>
+       * @property {Object} [listenerContext=undefined]
+       * @property {Number} [priority=undefined]
+       */
 
+      /**
+       * SignalBinding.
+       * @external SignalBinding
+       * @see {@link http://millermedeiros.github.io/js-signals/docs/symbols/SignalBinding.html}
+       */
+      /**
+       * Signal.
+       * @external Signal
+       * @see {@link http://millermedeiros.github.io/js-signals/docs/symbols/Signal.html}
+       */
 
-      function Signal(key) {
+      /**
+       * Event signal object to manipulate a js-signals Signal
+       * @param {string} key named reference to the event signal
+       */
+      function EventSignal( key ) {
+        /**
+         * Named key for the signal
+         * @type {string}
+         */
         this.key = key;
       }
 
-      Signal.prototype.emit =  function ( data ) {
+      /**
+       * Emit/Dispatch event signal
+       * @param {*} [data] Data to emit to listeners
+       */
+      EventSignal.prototype.emit = function( data ) {
         if ( _oSignals[this.key] ) {
           _oSignals[this.key].dispatch(data);
         }
       };
 
-      Signal.prototype.listen = function ( callback, options ) {
+      /**
+       * Add a listener handler to a signal
+       * @param {Function} callback listener function bound to the signal
+       * @param {listenoptionsHash} options object with options
+       * @returns {SignalBinding} <a href="http://millermedeiros.github.io/js-signals/docs/symbols/SignalBinding.html">SignalBinding</a>
+       */
+      EventSignal.prototype.listen = function( callback, options ) {
         if ( !_oSignals[this.key] ) {
           return undefined;
         }
@@ -74,7 +101,13 @@
         return _oSignals[this.key][options.method](callback, options.listenerContext, options.priority);
       };
 
-      Signal.prototype.unlisten = function ( callback, options ) {
+      /**
+       * Remove a listener from a signal
+       * @param {Function} callback listener function bound to the signal
+       * @param {listenoptionsHash} options object with options
+       * @returns {Function} listener function
+       */
+      EventSignal.prototype.unlisten = function( callback, options ) {
         if ( !_oSignals[this.key] ) {
           return undefined;
         }
@@ -82,14 +115,23 @@
         return _oSignals[this.key].remove(callback, options.listenerContext);
       };
 
-      Signal.prototype.unlistenAll = function () {
+      /**
+       * Removes all listeners from a signal
+       */
+      EventSignal.prototype.unlistenAll = function() {
         if ( !_oSignals[this.key] ) {
           return;
         }
         _oSignals[this.key].removeAll();
       };
 
-      Signal.prototype.isListening = function ( callback, options ) {
+      /**
+       * Verifies if listener is bound to a signal
+       * @param callback {Function} callback listener function bound to the signal
+       * @param {listenoptionsHash} options object with options
+       * @returns {boolean}
+       */
+      EventSignal.prototype.isListening = function( callback, options ) {
         if ( !_oSignals[this.key] ) {
           return false;
         }
@@ -97,14 +139,21 @@
         return _oSignals[this.key].has(callback, options.listenerContext);
       };
 
-      Signal.prototype.getNumListeners = function () {
+      /**
+       * Get number of listeners bound to a signal
+       * @returns {Number}
+       */
+      EventSignal.prototype.getNumListeners = function() {
         if ( !_oSignals[this.key] ) {
           return 0;
         }
         return _oSignals[this.key].getNumListeners();
       };
 
-      Signal.prototype.dispose = function () {
+      /**
+       * Destroys the event signal
+       */
+      EventSignal.prototype.dispose = function() {
         if ( !_oSignals[this.key] ) {
           return;
         }
@@ -112,38 +161,37 @@
         delete _oSignals[this.key];
       };
 
-      Signal.prototype.forget = function () {
+      /**
+       * Forget memorized arguments.
+       * @see http://millermedeiros.github.io/js-signals/docs/symbols/Signal.html#forget
+       */
+      EventSignal.prototype.forget = function() {
         if ( !_oSignals[this.key] ) {
           return;
         }
         _oSignals[this.key].forget();
       };
 
-      Signal.prototype.get = function () {
+      /**
+       * Get the Signal object
+       * @returns {Signal} <a href="http://millermedeiros.github.io/js-signals/docs/symbols/Signal.html">Signal</a>
+       */
+      EventSignal.prototype.get = function() {
         if ( !_oSignals[this.key] ) {
           return undefined;
         }
         return _oSignals[this.key];
       };
 
-
+      //-------------------------------------------
 
       /**
-       * Signal service object
-       * The service expose methods to manipulate each signal - named by a key
-       * At runtime is created a property of type Signal for each registered signal.
-       * If a signal with key='itemadded' is registered then
-       * if ***signalservice*** is the reference to the instanec service then
-       * ***signalservice.itemadded*** will be a reference to the Signal object to manipulate the signal
-       *
-       * A signal can be manipulated by two ways:
-       * signalservice.itemadded.emit(...)
-       * or
-       * signalservice.emit('itemadded', ...)
-       * @name SignalService
-       * @constructor
+       * Signals Service object <br/>The service expose methods to manipulate each event signal - named by a key.
+       * <br/>At runtime is created a property of type {@link EventSignal} for each registered signal
+       * <br/>that is accessed by this[key]
+       * @name SignalsService
        */
-      function SignalService() {
+      function SignalsService() {
         Object.defineProperty(this, 'SIGNALS', {enumerable: true, configurable: false, writable: false,
           value: EnumSignals
         });
@@ -152,7 +200,7 @@
           return register.call(this, key);
         };
         this.emit = function( key, data ) {
-          if (register.call(this, key)){
+          if ( register.call(this, key) ) {
             this[key].emit(data);
           }
         };
@@ -185,7 +233,7 @@
       }
 
       //create instance of service
-      var theService = new SignalService();
+      var theService = new SignalsService();
 
       //initialize signals at creation if configured to do that
       if ( initSignals ) {
@@ -197,11 +245,27 @@
       }
       return theService;
 
+      //-------------------------------------------
+
       /**
-       * @name register
-       * - Register a signal
-       * @param key the named key for the signal
-       * @returns {boolean} true if signal was registered successful
+       * Validates if a key is allowed to be registered
+       * @param key
+       * @returns {boolean}
+       */
+      function isValidSignal( key ) {
+        //TODO: ? by now only the service need to be configured with all event keys; maybe this shoul be modified to allow dynamicly registration...
+        for ( var k in EnumSignals ) {
+          if ( EnumSignals.hasOwnProperty(k) && typeof key === 'string' && EnumSignals[k] === key ) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      /**
+       * Internal function to register an Event Signal
+       * @param key
+       * @returns {boolean}
        */
       function register( key ) {
 
@@ -214,46 +278,25 @@
         }
 
         if ( !_oSignals[key] ) {
+          //create the js-signals event signal
           _oSignals[key] = new Signals();
         }
 
         //don't know if this is necessary...
         //var signalServiceInstance = this;
 
-        //interface methods for signal key already defined
-        //interface methods will be defined only once per signal key
+        //signal object will be defined only once per signal key
         if ( this[key] ) {
           return true;
         }
 
-        //aux function to create object
-        //from: http://javascript.crockford.com/prototypal.html
-        //also here: http://www.martinrinehart.com/frontend-engineering/engineers/javascript/inher/masters/master-inher-crockford.html
-        /*var oCreate = function( key, o ) {
-          function Signal() {
-            this.key = key;
-          }
-          Signal.prototype = o
-          return new Signal();
-        }*/
-        //create property with signal name (key) with 'signalInterface' as its prototype
-        //Object.defineProperty(this, key, {value: oCreate(key, signalInterface), enumerable: true, configurable: false, writable: false});
-        Object.defineProperty(this, key, {value: new Signal(key), enumerable: true, configurable: false, writable: false});
+        //create property with signal name (key) for EventSignal object
+        Object.defineProperty(this, key, {value: new EventSignal(key), enumerable: true, configurable: false, writable: false});
 
+        //protect event signal properties
         for ( var prop in this[key] ) {
           Object.defineProperty(this[key], prop, {enumerable: true, configurable: false, writable: false, value: this[key][prop]});
         }
-
-        /*//interface methods will be defined only once per signal key
-        Object.defineProperty(this, key, {value: (function() {
-          //extend object interface
-          var oSignal = angular.extend({key: key}, signalInterface);
-          //modify properties of new object
-          for ( var prop in oSignal ) {
-            Object.defineProperty(oSignal, prop, {enumerable: true, configurable: false, writable: false, value: oSignal[prop]});
-          }
-          return oSignal;
-        }())});*/
 
         return true;
       }
@@ -263,58 +306,33 @@
       need for extra code to validate operations
       logic is: a valid entry signal will have a property key to an object with handler methods for signal (emit, listen, etc.... )
       this logic is different from signals logic itself
-      The dispose method will destroy the signal object
+      The dispose method will destroy the js-signal object
       function unregister( key ) {
         delete this[key];
       }*/
 
-
-
-
-      /**
-       * Util functions
-       *
-       */
-
-      /**
-       *
-       * @param options
-       * @returns {Object}
-       */
-      function extendOptions( options ) {
-        return angular.extend({
-          listenerContext: undefined,
-          priority: undefined
-        }, options || {});
-      }
-
-      /**
-       *
-       * @param key
-       * @returns {boolean}
-       */
-      function isValidSignal( key ) {
-        for ( var k in EnumSignals ) {
-          if ( EnumSignals.hasOwnProperty(k) && typeof key === 'string' && EnumSignals[k] === key ) {
-            return true;
-          }
-        }
-        return false;
-      }
     }
 
     /**
-     * Permits configuration for the service instance
-     * @name config
-     * @param {object} config Identification ids for permitted signals
+     * @typedef configOptionsHash
+     * @type {object}
+     * @property {boolean} [init=false] - if true, the event signals will be initialized when service is instanciated. If false on first use.
+     * @property {Object} [signals={}]
+     */
+
+    /**
+     * Configuration for service
+     * @param {configOptionsHash} config
      */
     this.config = function( config ) {
-      angular.extend(EnumSignals, config.signals || {});
-      initSignals = config.init || initSignals;
+      if ( config ) {
+        angular.extend(EnumSignals, config.signals || {});
+        initSignals = config.init || initSignals;
+      }
     };
 
     this.$get = function() {
-      return new SignalServiceFactory();
+      return new SignalsServiceFactory();
     };
   }
 });

@@ -11,23 +11,12 @@ module.exports = function( config ) {
       //'bower_components/jquery/dist/jquery.js',
       //js-signals
       'bower_components/angular/angular.js',
-      //'https://code.angularjs.org/snapshot/angular.js',
-
-      'bower_components/angular-animate/angular-animate.min.js',
-      //'https://code.angularjs.org/snapshot/angular-animate.js',
-
       'bower_components/angular-mocks/angular-mocks.js',
       'bower_components/sinonjs/sinon.js',
       'bower_components/jasmine-sinon/lib/jasmine-sinon.js',
       'bower_components/js-signals/dist/signals.min.js',
       'src/angular-jssignals.js',
-//      'src/angular-jssignals.js',
-      'tests/*jasmine_spec.js'/*,
-      //'tests/assets*//*.json'*/
-
-      //'tests/teste*.js'
-
-
+      'tests/*jasmine_spec.js'
     ],
     // list of files to exclude
     exclude: [
