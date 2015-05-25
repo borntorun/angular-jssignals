@@ -33,7 +33,8 @@
    */
   /* @ngInject */
   function SignalServiceProvider( Signals ) {
-    var EnumSignals = {};
+    var EnumSignals = {},
+      initSignals = false;
 
     function SignalServiceFactory() {
       /*jshint validthis:true*/
@@ -54,7 +55,7 @@
       };
 
       function SignalService() {
-        Object.defineProperty(this, 'SIGNALS', {enumerable: true, configurable:false, writable: false,
+        Object.defineProperty(this, 'SIGNALS', {enumerable: true, configurable: false, writable: false,
           value: EnumSignals
         });
 
@@ -79,7 +80,7 @@
           return this[key].isListening(callback, options);
         };
         this.getNumListeners = function( key ) {
-          return this[key]? this[key].getNumListeners() : 0;
+          return this[key] ? this[key].getNumListeners() : 0;
         };
         this.dispose = function( key ) {
           this[key].dispose();
@@ -92,7 +93,15 @@
         };
       }
 
-      return new SignalService();
+      var theService = new SignalService();
+      if ( initSignals ) {
+        for ( var k in EnumSignals ) {
+          if ( EnumSignals.hasOwnProperty(k) && typeof EnumSignals[k] === 'string' ) {
+            theService.register(EnumSignals[k]);
+          }
+        }
+      }
+      return theService;
 
       /**
        * @name register
@@ -109,7 +118,7 @@
           return true;
         }
 
-        if (!_arraySignals[key]) {
+        if ( !_arraySignals[key] ) {
           _arraySignals[key] = new Signals();
         }
 
@@ -117,7 +126,7 @@
         //var signalServiceInstance = this;
 
         //interface methods for signal key already defined
-        if (this[key]) {
+        if ( this[key] ) {
           return true;
         }
 
@@ -126,8 +135,8 @@
           //extend object interface
           var oSignal = angular.extend({key: key}, signalInterface);
           //modify properties of new object
-          for (var prop in oSignal) {
-            Object.defineProperty(oSignal, prop, {enumerable: true, configurable:false, writable: false, value: oSignal[prop]});
+          for ( var prop in oSignal ) {
+            Object.defineProperty(oSignal, prop, {enumerable: true, configurable: false, writable: false, value: oSignal[prop]});
           }
           return oSignal;
         }())});
@@ -146,49 +155,71 @@
       }*/
 
       function dispatch( data ) {
-        _arraySignals[this.key].dispatch(data);
+        if ( _arraySignals[this.key] ) {
+          _arraySignals[this.key].dispatch(data);
+        }
       }
 
       function add( callback, options ) {
+        if ( !_arraySignals[this.key] ) {
+          return undefined;
+        }
         options = extendOptions(options);
         options.method = options.addOnce === true ? 'addOnce' : 'add';
         return _arraySignals[this.key][options.method](callback, options.listenerContext, options.priority);
       }
 
       function remove( callback, options ) {
+        if ( !_arraySignals[this.key] ) {
+          return undefined;
+        }
         options = extendOptions(options);
         return _arraySignals[this.key].remove(callback, options.listenerContext);
       }
 
       function removeAll() {
-        return _arraySignals[this.key].removeAll();
+        if ( !_arraySignals[this.key] ) {
+          return;
+        }
+        _arraySignals[this.key].removeAll();
       }
 
       function has( callback, options ) {
+        if ( !_arraySignals[this.key] ) {
+          return false;
+        }
         options = extendOptions(options);
         return _arraySignals[this.key].has(callback, options.listenerContext);
       }
 
       function getNumListeners() {
+        if ( !_arraySignals[this.key] ) {
+          return 0;
+        }
         return _arraySignals[this.key].getNumListeners();
       }
 
       function forget() {
-        return _arraySignals[this.key].forget();
+        if ( !_arraySignals[this.key] ) {
+          return;
+        }
+        _arraySignals[this.key].forget();
       }
 
       function get() {
+        if ( !_arraySignals[this.key] ) {
+          return undefined;
+        }
         return _arraySignals[this.key];
       }
 
       function dispose() {
+        if ( !_arraySignals[this.key] ) {
+          return;
+        }
         _arraySignals[this.key].dispose();
         delete _arraySignals[this.key];
       }
-
-
-
-
 
       /**
        * Util functions
@@ -214,7 +245,7 @@
        */
       function isValidSignal( key ) {
         for ( var k in EnumSignals ) {
-          if ( EnumSignals.hasOwnProperty(k) && EnumSignals[k] === key ) {
+          if ( EnumSignals.hasOwnProperty(k) && typeof key === 'string' && EnumSignals[k] === key ) {
             return true;
           }
         }
@@ -228,7 +259,8 @@
      * @param {object} config Identification ids for permitted signals
      */
     this.config = function( config ) {
-      angular.extend(EnumSignals, config);
+      angular.extend(EnumSignals, config.signals || {});
+      initSignals = config.init || initSignals;
     };
 
     this.$get = function() {
