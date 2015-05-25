@@ -2,9 +2,10 @@
   "name": "angular-jssignals",
   "version": "0.0.0",
   "description": "Angular service for https://github.com/millermedeiros/js-signals (Custom Event/Messaging system for JavaScript)",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "main": "dist/angular-jssignals.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/borntorun/angular-jssignals.git"
   },
   "keywords": [
     "javascript",
@@ -21,6 +22,9 @@
   ],
   "author": "Joao Carvalho <jmmtcarvalho@gmail.com>",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/borntorun/angular-jssignals/issues"
+  },
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-concurrent": "^1.0.0",

@@ -5,6 +5,7 @@
     "Joao Carvalho <jmmtcarvalho@gmail.com>"
   ],
   "description": "Angular service for https://github.com/millermedeiros/js-signals (Custom Event/Messaging system for JavaScript)",
+  "main": "dist/angular-jssignals.js",
   "moduleType": [
     "amd",
     "globals",
@@ -23,14 +24,29 @@
     "pub/sub",
     "observer"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/borntorun/angular-jssignals.git"
+  },
   "license": "MIT",
-  "private": true,
+  "private": false,
   "ignore": [
     "**/.*",
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "src",
+    ".gitignore",
+    ".gitattributes",
+    "Gruntfile.js",
+    "karma.conf.js",
+    "karma.jasmine.conf.js",
+    "jsdoc.*",
+    "package.json",
+    ".bowerrc",
+    ".jshintrc",
+    ".travis.yml"
   ],
   "dependencies": {
     "angular": "~1.3.15",
