@@ -15,6 +15,7 @@ module.exports = function( config ) {
       'bower_components/sinonjs/sinon.js',
       'bower_components/jasmine-sinon/lib/jasmine-sinon.js',
       'bower_components/js-signals/dist/signals.min.js',
+      //'dist/angular-jssignals.min.js',
       'src/angular-jssignals.js',
       'tests/*jasmine_spec.js'
     ],
