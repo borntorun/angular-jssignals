@@ -74,7 +74,6 @@ describe('angular-jssignals:', function() {
 
     function callOnItemAdded( data ) {
       value = data.value;
-      //expect(data.value).toBe('called');
     }
 
     function callOnItemRemoved( data ) {
@@ -453,6 +452,10 @@ describe('angular-jssignals:', function() {
     it('should call registered callback on emit event', function( done ) {
       signalservice.register(signalservice.SIGNALS.ITEMADDED);
       signalservice.itemadded.listen(callOnItemAdded);
+
+      console.log(signalservice);
+      console.log(Object.getPrototypeOf(signalservice.itemadded));
+
       signalservice.itemadded.emit({value: 'called'});
 
       setTimeout(function() {

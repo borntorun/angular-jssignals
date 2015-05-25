@@ -28,8 +28,7 @@
   /**
    * Service provider for Signal Service
    * @name SignalServiceProvider
-   * @param Signals
-   * @constructor
+   * @param Signals - signals in js-signals
    */
   /* @ngInject */
   function SignalServiceProvider( Signals ) {
@@ -38,22 +37,112 @@
 
     function SignalServiceFactory() {
       /*jshint validthis:true*/
-      var _arraySignals;
+      var _oSignals;
 
-      _arraySignals = {};
+      _oSignals = {};
 
-      var signalInterface = {
+      //interface for the Signal propeyty object
+      /*var signalInterface = {
         emit: dispatch,
         listen: add,
         unlisten: remove,
         unlistenAll: removeAll,
         isListening: has,
         getNumListeners: getNumListeners,
+        dispose: dispose,
         forget: forget,
-        get: get,
-        dispose: dispose
+        get: get
+      };*/
+
+
+      function Signal(key) {
+        this.key = key;
+      }
+
+      Signal.prototype.emit =  function ( data ) {
+        if ( _oSignals[this.key] ) {
+          _oSignals[this.key].dispatch(data);
+        }
       };
 
+      Signal.prototype.listen = function ( callback, options ) {
+        if ( !_oSignals[this.key] ) {
+          return undefined;
+        }
+        options = extendOptions(options);
+        options.method = options.addOnce === true ? 'addOnce' : 'add';
+        return _oSignals[this.key][options.method](callback, options.listenerContext, options.priority);
+      };
+
+      Signal.prototype.unlisten = function ( callback, options ) {
+        if ( !_oSignals[this.key] ) {
+          return undefined;
+        }
+        options = extendOptions(options);
+        return _oSignals[this.key].remove(callback, options.listenerContext);
+      };
+
+      Signal.prototype.unlistenAll = function () {
+        if ( !_oSignals[this.key] ) {
+          return;
+        }
+        _oSignals[this.key].removeAll();
+      };
+
+      Signal.prototype.isListening = function ( callback, options ) {
+        if ( !_oSignals[this.key] ) {
+          return false;
+        }
+        options = extendOptions(options);
+        return _oSignals[this.key].has(callback, options.listenerContext);
+      };
+
+      Signal.prototype.getNumListeners = function () {
+        if ( !_oSignals[this.key] ) {
+          return 0;
+        }
+        return _oSignals[this.key].getNumListeners();
+      };
+
+      Signal.prototype.dispose = function () {
+        if ( !_oSignals[this.key] ) {
+          return;
+        }
+        _oSignals[this.key].dispose();
+        delete _oSignals[this.key];
+      };
+
+      Signal.prototype.forget = function () {
+        if ( !_oSignals[this.key] ) {
+          return;
+        }
+        _oSignals[this.key].forget();
+      };
+
+      Signal.prototype.get = function () {
+        if ( !_oSignals[this.key] ) {
+          return undefined;
+        }
+        return _oSignals[this.key];
+      };
+
+
+
+      /**
+       * Signal service object
+       * The service expose methods to manipulate each signal - named by a key
+       * At runtime is created a property of type Signal for each registered signal.
+       * If a signal with key='itemadded' is registered then
+       * if ***signalservice*** is the reference to the instanec service then
+       * ***signalservice.itemadded*** will be a reference to the Signal object to manipulate the signal
+       *
+       * A signal can be manipulated by two ways:
+       * signalservice.itemadded.emit(...)
+       * or
+       * signalservice.emit('itemadded', ...)
+       * @name SignalService
+       * @constructor
+       */
       function SignalService() {
         Object.defineProperty(this, 'SIGNALS', {enumerable: true, configurable: false, writable: false,
           value: EnumSignals
@@ -63,7 +152,9 @@
           return register.call(this, key);
         };
         this.emit = function( key, data ) {
-          register.call(this, key) && (this[key].emit(data));
+          if (register.call(this, key)){
+            this[key].emit(data);
+          }
         };
         this.listen = function( key, callback, options ) {
           if ( register.call(this, key) ) {
@@ -93,7 +184,10 @@
         };
       }
 
+      //create instance of service
       var theService = new SignalService();
+
+      //initialize signals at creation if configured to do that
       if ( initSignals ) {
         for ( var k in EnumSignals ) {
           if ( EnumSignals.hasOwnProperty(k) && typeof EnumSignals[k] === 'string' ) {
@@ -105,8 +199,9 @@
 
       /**
        * @name register
-       * @param key
-       * @returns {boolean}
+       * - Register a signal
+       * @param key the named key for the signal
+       * @returns {boolean} true if signal was registered successful
        */
       function register( key ) {
 
@@ -114,23 +209,42 @@
           return false;
         }
 
-        if ( _arraySignals[key] ) {
+        if ( _oSignals[key] ) {
           return true;
         }
 
-        if ( !_arraySignals[key] ) {
-          _arraySignals[key] = new Signals();
+        if ( !_oSignals[key] ) {
+          _oSignals[key] = new Signals();
         }
 
         //don't know if this is necessary...
         //var signalServiceInstance = this;
 
         //interface methods for signal key already defined
+        //interface methods will be defined only once per signal key
         if ( this[key] ) {
           return true;
         }
 
-        //interface methods will be defined only once per signal key
+        //aux function to create object
+        //from: http://javascript.crockford.com/prototypal.html
+        //also here: http://www.martinrinehart.com/frontend-engineering/engineers/javascript/inher/masters/master-inher-crockford.html
+        /*var oCreate = function( key, o ) {
+          function Signal() {
+            this.key = key;
+          }
+          Signal.prototype = o
+          return new Signal();
+        }*/
+        //create property with signal name (key) with 'signalInterface' as its prototype
+        //Object.defineProperty(this, key, {value: oCreate(key, signalInterface), enumerable: true, configurable: false, writable: false});
+        Object.defineProperty(this, key, {value: new Signal(key), enumerable: true, configurable: false, writable: false});
+
+        for ( var prop in this[key] ) {
+          Object.defineProperty(this[key], prop, {enumerable: true, configurable: false, writable: false, value: this[key][prop]});
+        }
+
+        /*//interface methods will be defined only once per signal key
         Object.defineProperty(this, key, {value: (function() {
           //extend object interface
           var oSignal = angular.extend({key: key}, signalInterface);
@@ -139,7 +253,7 @@
             Object.defineProperty(oSignal, prop, {enumerable: true, configurable: false, writable: false, value: oSignal[prop]});
           }
           return oSignal;
-        }())});
+        }())});*/
 
         return true;
       }
@@ -154,72 +268,8 @@
         delete this[key];
       }*/
 
-      function dispatch( data ) {
-        if ( _arraySignals[this.key] ) {
-          _arraySignals[this.key].dispatch(data);
-        }
-      }
 
-      function add( callback, options ) {
-        if ( !_arraySignals[this.key] ) {
-          return undefined;
-        }
-        options = extendOptions(options);
-        options.method = options.addOnce === true ? 'addOnce' : 'add';
-        return _arraySignals[this.key][options.method](callback, options.listenerContext, options.priority);
-      }
 
-      function remove( callback, options ) {
-        if ( !_arraySignals[this.key] ) {
-          return undefined;
-        }
-        options = extendOptions(options);
-        return _arraySignals[this.key].remove(callback, options.listenerContext);
-      }
-
-      function removeAll() {
-        if ( !_arraySignals[this.key] ) {
-          return;
-        }
-        _arraySignals[this.key].removeAll();
-      }
-
-      function has( callback, options ) {
-        if ( !_arraySignals[this.key] ) {
-          return false;
-        }
-        options = extendOptions(options);
-        return _arraySignals[this.key].has(callback, options.listenerContext);
-      }
-
-      function getNumListeners() {
-        if ( !_arraySignals[this.key] ) {
-          return 0;
-        }
-        return _arraySignals[this.key].getNumListeners();
-      }
-
-      function forget() {
-        if ( !_arraySignals[this.key] ) {
-          return;
-        }
-        _arraySignals[this.key].forget();
-      }
-
-      function get() {
-        if ( !_arraySignals[this.key] ) {
-          return undefined;
-        }
-        return _arraySignals[this.key];
-      }
-
-      function dispose() {
-        if ( !_arraySignals[this.key] ) {
-          return;
-        }
-        _arraySignals[this.key].dispose();
-        delete _arraySignals[this.key];
-      }
 
       /**
        * Util functions
