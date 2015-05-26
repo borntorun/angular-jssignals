@@ -1,6 +1,6 @@
 {
   "name": "angular-jssignals",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Angular service for https://github.com/millermedeiros/js-signals (Custom Event/Messaging system for JavaScript)",
   "main": "dist/angular-jssignals.js",
   "repository": {
