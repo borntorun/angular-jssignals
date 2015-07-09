@@ -253,6 +253,11 @@
        * @returns {boolean}
        */
       function isValidSignal( key ) {
+
+        if (!(/^[a-zA-Z0-9_$]+$/).test(key)) {
+          return false;
+        }
+
         //TODO: ? by now only the service need to be configured with all event keys; maybe this shoul be modified to allow dynamicly registration...
         for ( var k in EnumSignals ) {
           if ( EnumSignals.hasOwnProperty(k) && typeof key === 'string' && EnumSignals[k] === key ) {

@@ -47,6 +47,47 @@ describe('angular-jssignals:', function() {
 
 describe('angular-jssignals:', function() {
   var signalsService, SignalsServiceProvider;
+  var config = [
+    {signals: {ITEMADDED: ' itemadded'}},
+    {signals: {ITEMADDED: '#itemadded'}},
+    {signals: {ITEMADDED: 'item added'}},
+    {signals: {ITEMADDED: '!item added'}},
+  ];
+
+  config.forEach(function( item, index ) {
+    describe('Test provider configuration - invalid keys -[config=' + index + '] ==> ', function() {
+
+      beforeEach(module('jsSignalsServiceModule', function( _SignalsServiceProvider_ ) {
+        SignalsServiceProvider = _SignalsServiceProvider_;
+        (item.signals || item.init) && (SignalsServiceProvider.config(item));
+      }));
+
+      beforeEach(function() {
+        inject(function( _SignalsService_ ) {
+          signalsService = _SignalsService_;
+        });
+      });
+
+      it('service should be defined', function() {
+        expect(signalsService).toBeDefined();
+      });
+
+      it('should not allow to register' , function() {
+        expect(signalsService.SIGNALS).toEqual(item.signals || {});
+        for ( var k in signalsService.SIGNALS ) {
+          expect(signalsService.register(signalsService.SIGNALS[k], angular.noop())).toBeFalsy();
+
+        }
+      });
+    });
+
+  });
+
+});
+
+
+describe('angular-jssignals:', function() {
+  var signalsService, SignalsServiceProvider;
   var config = {
     signals: {
       ITEMADDED: 'itemadded',
@@ -92,6 +133,7 @@ describe('angular-jssignals:', function() {
       } catch( e ) {
       }
     });
+
 
     it('should call registered callback on emit event', function( done ) {
       signalsService.listen(signalsService.SIGNALS.ITEMADDED, callOnItemAdded);

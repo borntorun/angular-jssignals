@@ -76,7 +76,7 @@ module.exports = function( grunt ) {
       },
       build: {
         options: {
-          mangle: true,
+          mangle: false,
           beautify: false,
           compress: true,
           indent_level: 0
