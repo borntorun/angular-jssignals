@@ -3,16 +3,16 @@ env:
   matrix:
   - TEST_SUITE=unit
   global:
-    - secure: cUI29F9xzu0VSJ6lxy+koBVjLDf4aVuvc75GWikZw3gNVJKNEgorxTIdS7u2y0UWKfLYI0++uqaUecbJS2NAQ+TGP97UwsCfrB24XV7u9a9mWhnYqTqnkQXECnGUoQRHPcNQ0K81CZhjP5VlqL1+pVJG8t8/gveCc5o1EZm8jnE=
-    - secure: YRtGf9M4KRN8Xr1ScBzQK/yfeMH76mofr9bhMDaro/rVabH/IER8eVSlTIB2JA5xZy1EWCz05wyeHnXMO3Ei1QXkcFaexs4Z5Va+GEMTfhQhwDlCUy5irA/4K1SB5vGKUih9pWazV4Hd/4Eo56WdrwJnXZvWftArKxN35HLYD1g=
+  - secure: TntAnIgW4m6OiBeu+BaQ4jJKKRdL+6pfg67P2KMOHg+6JMIofcWYuKaKML1AvPwE3lU6AXyve8HXVaNG5cWokyeXVIHkIMhpkJdQ5/H2TvcyywK3K9NVDBKCGg06JQMLyfMfKX4+oQus30DFXKwVIPHy1iRcuRZhRfOWqSkCRjVgsg/GlLH3ar/UpTaDqAU55o6jY1dpjimaGW05OhiN2dHcYfXmLPjC5erwMf+LM5kOgyftCkxMd/zrzKvbbrE59viBcNVpMONgk3BFuXAQJG3KBW6LGPhm2T9G8mo15wh9mmAmvTOBTnAIRaFx9i2VFfJZfn+Il5VqufqKFYX5l3s1SUNa5DEIwN0HweasUdUwID+MdUxWizsWxoCRMEqGl4uOnWvwM2DQt9ROgugrYYyhC3GEnKB+bnqzREaMqecMh53MAvhaQn7/XaGhN4YrjeA4hawQ1gB8SCnQe6mLX/A71sWb+SElK9txwtBBu01akLFbNc5qOjG1DP6Mo0BKfx65zMIqnNc8y86PiXTkICEyIG8GsEu9ExAK9ENXIOiv/9bYbK4e7u+sIedYQY2IpNHblVJ7emvaioDiQL+6YtR/iptO1K36pIY8QQVfiwCU/I0AKCXAlIRHlmj51b9NumrugxGK0FYxSJERZTGOtQkYksWhCJzEGNTAf1eoN0k=
+  - secure: TYynfUhqpmbWx9BkRc5lOKShmGZC1sXPBcXBsJJO0BLLjX1PJsDTbJF+G0sNM6DQnOeCXGkqoRrXucn8N9zbNI8KThdbFa5T7nezXHPqI4Tx0q6zgtSIelQkXRsR7q8RE+CFFCgjMikrLReewVurWT7UUmhF6hozw5mkGt8S5ahcn2DEcu2WcmWELgjU5Cb6dnutl8+AZ7v0IeL/NBv9LyMim9YWfks9OH7rJOKvJkg9UsY3PD1NEJcrwwTyQsIT6itbxVxQyzZe73/MnQyWGwruBhhvYE8nxodAQuTvSiIlkT59gtCPf0A/tXfEyyGcmnhYLtCDEJyESPYXJ/99cUKLJl9FRGbrH+S/dWg/pOlzxcBoCV5Cffc01g02lFKZTrW/wcPhjP6SahNWAbrZeBsXOCNFaBkT5uc9HiqES050JI49KCc5FGkalradwbeDUspLzGGu+023fPe7ncYQz2+z6p5jFGedmSNCSrGqfi0ZSgl3LZN6NKMh25xrqF1gfx5ToUsnPWNfV0TyMqDosku41uujh3fip4oTCZ6wDlEV+0w8U7dZj1HxBoxeO79Nk5MbLzDFWdeyMEnuW5dXzPqEaYcEHp8g+LmnxmpWvuNYUuh1XxIvGl0FtshwzfO3U6oTUClW/Ngy39ICoS/BiKR2HUJ9K6PRkL7uKAxxv4Y=
 node_js:
 - 4
 script: tests/e2e/integration/run-ci
 branches:
   only:
-    - master
-    - /^integration-.*$/
-    - /^changes-to-.*$/
+  - master
+  - /^integration-.*$/
+  - /^changes-to-.*$/
 before_script:
 - npm install -g grunt-cli
 - npm install -g node-static
