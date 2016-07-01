@@ -49,11 +49,11 @@
     ".travis.yml"
   ],
   "dependencies": {
-    "angular": "~1.3.15",
+    "angular": "~1.5.7",
     "js-signals": "~1.0.0"
   },
   "devDependencies": {
-    "angular-mocks": "~1.3.15",
+    "angular-mocks": "~1.5.7",
     "jasmine-sinon": "~0.4.0"
   }
 }
