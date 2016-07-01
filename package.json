@@ -42,9 +42,8 @@
     "grunt-ngdocs": "^0.2.7",
     "grunt-protractor-runner": "^3.2.0",
     "grunt-protractor-webdriver": "^0.2.0",
+    "grunt-release-build": "^0.2.0",
     "grunt-sed": "git://github.com/borntorun/grunt-sed.git#update-dependencies",
-    "grunt-shell-spawn": "^0.3.8",
-    "grunt-step": "^1.0.0",
     "jasmine-core": "^2.3.4",
     "karma": "^1.1.0",
     "karma-chrome-launcher": "^1.0.1",
@@ -57,7 +56,6 @@
     "lodash": "^4.13.1",
     "mocha": "^2.2.5",
     "protractor": "^3.3.0",
-    "readline-sync": "^1.2.15",
     "semver": "^5.2.0",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0"
