@@ -436,9 +436,9 @@ module.exports = function( grunt ) {
    * Build Task
    */
   grunt.registerTask('build', ['jshint', 'concat', 'ngAnnotate', 'uglify', 'sed:version']);
-  grunt.registerTask('release', [releasebuild]);
-  grunt.registerTask('release:minor', [releasebuild:minor]);
-  grunt.registerTask('release:major', [releasebuild:major]);
+  grunt.registerTask('release', ['releasebuild']);
+  grunt.registerTask('release:minor', ['releasebuild:minor']);
+  grunt.registerTask('release:major', ['releasebuild:major']);
   /**
    * Default
    */
