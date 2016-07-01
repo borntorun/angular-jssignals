@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/borntorun/angular-jssignals.svg?branch=master)](https://travis-ci.org/borntorun/angular-jssignals)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
+[![devDependency Status](https://david-dm.org/borntorun/angular-jssignals/dev-status.svg)](https://david-dm.org/borntorun/angular-jssignals#info=devDependencies)
 
 angular-jssignals
 =======================
